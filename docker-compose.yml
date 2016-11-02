@@ -1,0 +1,30 @@
+mysql:
+  container_name: mysql
+  build: ./mysql
+  environment:
+    - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    - MYSQL_USER=${WORDPRESS_DB_USER}
+    - MYSQL_PASSWORD=${WORDPRESS_DB_PASSWORD}
+    - MYSQL_DATABASE=${WORDPRESS_DB_NAME}
+  mem_limit: 128m
+ 
+data:
+  container_name: wp-data
+  image: debian:jessie
+  volumes:
+    - /var/www/html/:/var/www/html/
+ 
+wordpress:
+  container_name: wordpress
+  build: ./wordpress
+  environment:
+    - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+    - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+    - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
+    - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX}
+  volumes_from:
+    - data
+  links:
+    - mysql:mysql
+  ports:
+    - "80:80"
